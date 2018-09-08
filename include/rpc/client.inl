@@ -1,7 +1,7 @@
 namespace rpc {
 
 template <typename... Args>
-RPCLIB_MSGPACK::object_handle client::call(std::string const &func_name,
+const RPCLIB_MSGPACK::object& client::call(std::string const &func_name,
                                     Args... args) {
     RPCLIB_CREATE_LOG_CHANNEL(client)
     auto future = async_call(func_name, std::forward<Args>(args)...);
@@ -12,9 +12,9 @@ RPCLIB_MSGPACK::object_handle client::call(std::string const &func_name,
         }
     }
 
-    return future.get();
+    return future.get().get();
 }
-
+    
 template <typename... Args>
 RPCLIB_MSGPACK::object_handle client::user_call(std::string const &func_name,const uint64_t& charid,
                                     Args... args) {

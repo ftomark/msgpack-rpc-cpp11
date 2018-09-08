@@ -4,7 +4,7 @@
 #define TESTUTILS_H_LHCAMVUX
 
 #include "gmock/gmock.h"
-#include "rpc/msgpack.hpp"
+#include "rpc/msgpack/msgpack.hpp"
 #include <regex>
 #include <thread>
 #include <tuple>

@@ -63,7 +63,9 @@ public:
     //!
     //! \throws rpc::rpc_error if the server responds with an error.
     template <typename... Args>
-    RPCLIB_MSGPACK::object_handle call(std::string const &func_name, Args... args);
+    const RPCLIB_MSGPACK::object& call(std::string const &func_name, Args... args);
+    
+    
 
     template <typename... Args>
     RPCLIB_MSGPACK::object_handle user_call(std::string const &func_name, const uint64_t& charid, Args... args);

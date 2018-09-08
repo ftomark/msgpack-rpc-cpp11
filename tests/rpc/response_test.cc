@@ -14,10 +14,11 @@ TEST(response, object_ctor) {
     auto o = make_unpacked(3, 42, "foo", "bar");
     response r(std::move(o));
     EXPECT_EQ(r.get_id(), 42);
-    std::string error = r.get_error()->as<std::string>();
+    
+    std::string error = (*r.get_error()).get().as<std::string>();//*object_handle.get() == object
     EXPECT_TRUE(error == "foo");
 
-    std::string result = r.get_result()->as<std::string>();
+    std::string result = (*r.get_result()).get().as<std::string>();
     EXPECT_TRUE(result == "bar");
 }
 
