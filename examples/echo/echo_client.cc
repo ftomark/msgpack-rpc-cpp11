@@ -8,7 +8,7 @@ int main() {
     std::string text;
     while (std::getline(std::cin, text)) {
         if (!text.empty()) {
-            std::string result(c.call("echo", text).as<std::string>());
+            std::string result(c.call("echo", text).get().as<std::string>());
             std::cout << "> " <<  result << std::endl;
         }
     }

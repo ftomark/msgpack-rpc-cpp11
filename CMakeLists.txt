@@ -85,11 +85,11 @@ configure_file(
 
 file(GLOB_RECURSE RPCLIB_HEADERS
   include/rpc/*.h
-  include/msgpack/*.hpp)
+  include/rpc/msgpack/*.hpp
+  include/rpc/msgpack/msgpack/*.hpp)
 file(GLOB_RECURSE DEP_HEADERS
   ${RPCLIB_DEPENDENCIES}/include/*.h
   ${RPCLIB_DEP_LIBRARIDEPENDENCIES}/include/*.hpp)
-  #${FIRLIB_DEPENDENCIES}/include/*.h
 
 set(DEP_SOURCES
   ${RPCLIB_DEPENDENCIES}/src/format.cc
@@ -154,7 +154,7 @@ target_compile_definitions(${PROJECT_NAME}
     "RPCLIB_FMT=clmdep_fmt"
   PUBLIC
     "${RPCLIB_OS_DEF}"
-    "RPCLIB_MSGPACK=clmdep_msgpack"
+    "RPCLIB_MSGPACK=msgpack"
   )
 
 if(RPCLIB_ENABLE_LOGGING)
@@ -175,6 +175,7 @@ target_link_libraries(${PROJECT_NAME} ${RPCLIB_DEP_LIBRARIES})
 target_include_directories(
   ${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rpc/msgpack>
   $<INSTALL_INTERFACE:include>
   )
 target_include_directories(

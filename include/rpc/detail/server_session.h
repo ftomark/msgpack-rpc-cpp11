@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "rpc/config.h"
-#include "rpc/msgpack.hpp"
+#include "rpc/msgpack/msgpack.hpp"
 
 #include "rpc/dispatcher.h"
 #include "rpc/detail/async_writer.h"

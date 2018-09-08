@@ -4,7 +4,7 @@
 #define FIR_RPCSERVER_H_S0HB5KXY
 
 #include "rpc/config.h"
-#include "rpc/msgpack.hpp"
+#include "rpc/msgpack/msgpack.hpp"
 #include "rpc/dispatcher.h"
 
 #include "rpc/detail/pimpl.h"

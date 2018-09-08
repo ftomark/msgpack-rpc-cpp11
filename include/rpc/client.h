@@ -8,7 +8,7 @@
 #include "rpc/config.h"
 #include "rpc/detail/log.h"
 #include "rpc/detail/pimpl.h"
-#include "rpc/msgpack.hpp"
+#include "rpc/msgpack/msgpack.hpp"
 
 namespace rpc {
 

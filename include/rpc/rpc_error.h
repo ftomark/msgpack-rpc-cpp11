@@ -5,7 +5,7 @@
 
 #include <exception>
 
-#include "rpc/msgpack.hpp"
+#include "rpc/msgpack/msgpack.hpp"
 
 namespace rpc {
 

@@ -9,7 +9,7 @@
 #include <unordered_map>
 
 #include "rpc/config.h"
-#include "rpc/msgpack.hpp"
+#include "rpc/msgpack/msgpack.hpp"
 
 #include "rpc/detail/call.h"
 #include "rpc/detail/func_tools.h"

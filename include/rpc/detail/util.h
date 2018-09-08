@@ -3,7 +3,7 @@
 #ifndef UTIL_H_YRIZ63UJ
 #define UTIL_H_YRIZ63UJ
 
-#include "rpc/msgpack.hpp"
+#include "rpc/msgpack/msgpack.hpp"
 #include "rpc/detail/make_unique.h"
 
 namespace rpc {
