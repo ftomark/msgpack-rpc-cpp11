@@ -16,8 +16,9 @@ const RPCLIB_MSGPACK::object& client::call(std::string const &func_name,
 }
     
 template <typename... Args>
-RPCLIB_MSGPACK::object_handle client::user_call(std::string const &func_name,const uint64_t& charid,
+const RPCLIB_MSGPACK::object& client::user_call(std::string const &func_name,const uint64_t& charid,
                                     Args... args) {
+    
     RPCLIB_CREATE_LOG_CHANNEL(client)
     auto future = async_user_call(func_name, charid, std::forward<Args>(args)...);
     if (auto timeout = get_timeout()) {
@@ -27,7 +28,7 @@ RPCLIB_MSGPACK::object_handle client::user_call(std::string const &func_name,con
         }
     }
 
-    return future.get();
+    return future.get().get();
 }
 
 template <typename... Args>

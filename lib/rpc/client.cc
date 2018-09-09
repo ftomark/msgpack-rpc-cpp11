@@ -57,6 +57,8 @@ struct client::impl {
 
     void do_connect(tcp::resolver::iterator endpoint_iterator) {
         LOG_INFO("Initiating connection.");
+        state_ = client::connection_state::initial;
+        
         RPCLIB_ASIO::async_connect(
             writer_->socket_, endpoint_iterator,
             [this](std::error_code ec, tcp::resolver::iterator) {
@@ -68,6 +70,8 @@ struct client::impl {
                     conn_finished_.notify_all();
                     do_read();
                 } else {
+                    state_ = client::connection_state::disconnected;
+                    is_connected_ = false;
                     LOG_ERROR("Error during connection: {}", ec);
                 }
             });
@@ -117,19 +121,22 @@ struct client::impl {
                     }
                     do_read();
                 } else if (ec == RPCLIB_ASIO::error::eof) {
-                    LOG_WARN("The server closed the connection.");
                     state_ = client::connection_state::disconnected;
+                    is_connected_ = false;
+                    LOG_WARN("The server closed the connection.");
                 } else if (ec == RPCLIB_ASIO::error::connection_reset) {
                     // Yes, this should be connection_state::reset,
                     // but on windows, disconnection results in reset. May be
                     // asio bug, may be a windows socket pecularity. Should be
                     // investigated later.
                     state_ = client::connection_state::disconnected;
+                    is_connected_ = false;
                     LOG_WARN("The connection was reset.");
                 } else {
                     LOG_ERROR("Unhandled error code: {} | '{}'", ec,
                               ec.message());
                 }
+               
             });
     }
 
@@ -168,6 +175,7 @@ struct client::impl {
     std::condition_variable conn_finished_;
     std::mutex mut_connection_finished_;
     std::thread io_thread_;
+    std::thread check_thread_;
     std::atomic<client::connection_state> state_;
     std::shared_ptr<detail::async_writer> writer_;
     nonstd::optional<int64_t> timeout_;
@@ -184,8 +192,26 @@ client::client(std::string const &addr, uint16_t port)
         RPCLIB_CREATE_LOG_CHANNEL(client)
         name_thread("client");
         pimpl->io_.run();
+        pimpl->state_ = rpc::client::connection_state::disconnected;
     });
+        
     pimpl->io_thread_ = std::move(io_thread);
+    std::thread check_thread([this]() {
+        RPCLIB_CREATE_LOG_CHANNEL(client)
+        name_thread("check_connect");
+        while(true)
+        {
+            if (pimpl->get_connection_state()==rpc::client::connection_state::disconnected)
+            {//开始重连
+                LOG_WARN("The client start reconnect...");
+                this->reconnect();
+            }
+            
+            sleep(5);//每隔一秒检查一次连接状态
+        }
+    });
+        
+    pimpl->check_thread_ = std::move(check_thread);
 }
 
 client::client()
@@ -193,6 +219,8 @@ client::client()
 {
 
 }
+    
+
 
 void client::connect(std::string const& addr,uint16_t port)
 {
@@ -203,14 +231,59 @@ void client::connect(std::string const& addr,uint16_t port)
     auto endpoint_it =
         resolver.resolve({pimpl->addr_, std::to_string(pimpl->port_)});
     pimpl->do_connect(endpoint_it);
+    
+    
     std::thread io_thread([this]() {
         RPCLIB_CREATE_LOG_CHANNEL(client)
         name_thread("client");
         pimpl->io_.run();
+        LOG_WARN("The connection was disconnect.");
     });
+    
     pimpl->io_thread_ = std::move(io_thread);
+    
+    std::thread check_thread([this]() {
+        RPCLIB_CREATE_LOG_CHANNEL(client)
+        name_thread("check_connect");
+        while(true)
+        {
+            if (pimpl->get_connection_state()==rpc::client::connection_state::disconnected)
+            {//开始重连
+                LOG_WARN("The client start reconnect...");
+                this->reconnect();
+            }
+            
+            sleep(5);//每隔一秒检查一次连接状态
+        }
+    });
+    
+    pimpl->check_thread_ = std::move(check_thread);
 }
 
+void client::reconnect()
+{
+    if (get_connection_state()==client::connection_state::disconnected)
+    {        
+        LOG_TRACE("start reconnect...");
+        pimpl->io_.reset();
+        pimpl->io_thread_.join();
+        
+        tcp::resolver resolver(pimpl->io_);
+        auto endpoint_it =
+        resolver.resolve({pimpl->addr_, std::to_string(pimpl->port_)});
+        pimpl->do_connect(endpoint_it);
+        
+        std::thread io_thread([this]() {
+            RPCLIB_CREATE_LOG_CHANNEL(client)
+            name_thread("client");
+            pimpl->io_.run();
+            LOG_WARN("The connection was disconnect.");
+        });
+        
+        pimpl->io_thread_ = std::move(io_thread);
+    }
+}
+    
 void client::wait_conn() {
     std::unique_lock<std::mutex> lock(pimpl->mut_connection_finished_);
     if (!pimpl->is_connected_) {
@@ -252,6 +325,12 @@ void client::post(RPCLIB_MSGPACK::sbuffer *buffer) {
 
 client::connection_state client::get_connection_state() const {
     return pimpl->get_connection_state();
+}
+
+bool client::is_connected() const
+{
+    return pimpl->is_connected_;
+        
 }
 
 nonstd::optional<int64_t> client::get_timeout() const {

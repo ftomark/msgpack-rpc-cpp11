@@ -48,6 +48,9 @@ public:
     ~client();
 
 	void connect(std::string const& addr,uint16_t port);
+    
+    
+    
 
     //! \brief Calls a function with the given name and arguments (if any).
     //!
@@ -68,7 +71,7 @@ public:
     
 
     template <typename... Args>
-    RPCLIB_MSGPACK::object_handle user_call(std::string const &func_name, const uint64_t& charid, Args... args);
+    const RPCLIB_MSGPACK::object& user_call(std::string const &func_name, const uint64_t& charid, Args... args);
 
     //! \brief Calls a function asynchronously with the given name and
     //! arguments.
@@ -137,6 +140,9 @@ public:
 
     //! \brief Returns the current connection state.
     connection_state get_connection_state() const;
+    
+    //! \brief Returns the current connected bool.
+    bool is_connected() const;
 
     //! \brief Waits for the completion of all ongoing calls.
     void wait_all_responses();
@@ -147,6 +153,7 @@ private:
 
     enum class request_type { call = 2, notification = 0  ,user_call = 3, user_notification=4};
 
+    void reconnect();
     void wait_conn();
     void post(std::shared_ptr<RPCLIB_MSGPACK::sbuffer> buffer, int idx,
               std::string const& func_name,
