@@ -1,4 +1,4 @@
-
+[中文版](README_cn.md)
 # EasyRPC 
 
 
