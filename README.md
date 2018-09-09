@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-When `srv.run()` is called, `rpclib` starts the server loop which listens to incoming connections
+When `srv.run()` is called, `EasyRPC` starts the server loop which listens to incoming connections
 and tries to dispatch calls to the bound functions. The functions are called from the thread where
 `run` was called from. There is also `async_run` that spawns worker threads and returns
 immediately.
@@ -68,7 +68,7 @@ int main() {
 
 All planned 1.0.0 features are done and tested; the current state is production-ready.
 
-# Who uses rpclib?
+# Who uses EasyRPC?
 
 This list is updated as I learn about more people using the library; let me
 know if you don't want your project listed here.
@@ -77,7 +77,7 @@ know if you don't want your project listed here.
 
 # Thanks
 
-`rpclib` builds on the efforts of fantastic C++ projects. In no particular order:
+`EasyRPC` builds on the efforts of fantastic C++ projects. In no particular order:
 
   * [MessagePack implementation for C and C++](https://github.com/msgpack/msgpack-c) by Takatoshi Kondo ([website](http://msgpack.org/))
   * [asio](https://github.com/chriskohlhoff/asio) by Christopher Kohlhoff ([website](http://think-async.com/Asio))
