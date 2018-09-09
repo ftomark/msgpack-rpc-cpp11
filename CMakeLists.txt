@@ -210,6 +210,7 @@ if(RPCLIB_BUILD_EXAMPLES)
   add_subdirectory(examples/echo)
   add_subdirectory(examples/mandelbrot)
   add_subdirectory(examples/calculator)
+  #add_subdirectory(examples/mydispatcher)
 endif()
 
 #

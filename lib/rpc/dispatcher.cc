@@ -26,7 +26,7 @@ response default_dispatcher::dispatch(RPCLIB_MSGPACK::object const &msg,
     switch (type) {
     case 0:
         return dispatch_notification(msg, suppress_exceptions);
-    case 2:
+    case 1:
         return dispatch_call(msg, suppress_exceptions);
     default:
         return response::empty();

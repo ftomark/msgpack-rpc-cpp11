@@ -49,9 +49,7 @@ public:
 
 	void connect(std::string const& addr,uint16_t port, bool auto_reconnect=false);
     
-    
-    
-
+ 
     //! \brief Calls a function with the given name and arguments (if any).
     //!
     //! \param func_name The name of the function to call on the server.
@@ -68,10 +66,6 @@ public:
     template <typename... Args>
     const RPCLIB_MSGPACK::object& call(std::string const &func_name, Args... args);
     
-    
-
-    template <typename... Args>
-    const RPCLIB_MSGPACK::object& user_call(std::string const &func_name, const uint64_t& charid, Args... args);
 
     //! \brief Calls a function asynchronously with the given name and
     //! arguments.
@@ -93,10 +87,6 @@ public:
     std::future<RPCLIB_MSGPACK::object_handle> async_call(std::string const &func_name,
                                                    Args... args);
 
-	template <typename... Args>
-    std::future<RPCLIB_MSGPACK::object_handle> async_user_call(std::string const &func_name,const uint64_t& charid,
-                                                   Args... args);
-
     //! \brief Sends a notification with the given name and arguments (if any).
     //!
     //! Notifications are a special kind of calls. They can be used to notify
@@ -111,9 +101,6 @@ public:
     //! notification is written to the socket).
     template <typename... Args>
     void send(std::string const &func_name, Args... args);
-	
-	template <typename... Args>
-    void send_user(std::string const &func_name, const uint64_t& charid, Args... args);
 
     //! \brief Returns the timeout setting of this client in milliseconds.
     //!
@@ -154,7 +141,7 @@ private:
     //! \brief Type of a promise holding a future response.
     using rsp_promise = std::promise<RPCLIB_MSGPACK::object_handle>;
 
-    enum class request_type { call = 2, notification = 0  ,user_call = 3, user_notification=4};
+    enum class request_type {  notification = 0 ,call = 1};
 
     
     void wait_conn();

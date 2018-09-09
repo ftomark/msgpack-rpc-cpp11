@@ -14,22 +14,7 @@ const RPCLIB_MSGPACK::object& client::call(std::string const &func_name,
 
     return future.get().get();
 }
-    
-template <typename... Args>
-const RPCLIB_MSGPACK::object& client::user_call(std::string const &func_name,const uint64_t& charid,
-                                    Args... args) {
-    
-    RPCLIB_CREATE_LOG_CHANNEL(client)
-    auto future = async_user_call(func_name, charid, std::forward<Args>(args)...);
-    if (auto timeout = get_timeout()) {
-        auto wait_result = future.wait_for(std::chrono::milliseconds(*timeout));
-        if (wait_result == std::future_status::timeout) {
-            throw_timeout(func_name);
-        }
-    }
 
-    return future.get().get();
-}
 
 template <typename... Args>
 std::future<RPCLIB_MSGPACK::object_handle>
@@ -58,32 +43,7 @@ client::async_call(std::string const &func_name, Args... args) {
     return ft;
 }
 
-template <typename... Args>
-std::future<RPCLIB_MSGPACK::object_handle>
-client::async_user_call(std::string const &func_name, const uint64_t& charid, Args... args) {
-    RPCLIB_CREATE_LOG_CHANNEL(client)
-    wait_conn();
-    using RPCLIB_MSGPACK::object;
-    RPCLOG_DEBUG("Calling {}", func_name);
 
-    auto args_obj = std::make_tuple(args...);
-    const int idx = get_next_call_idx();
-    auto user_call_obj =
-        std::make_tuple(static_cast<uint8_t>(client::request_type::user_call), idx,
-                        func_name, charid, args_obj);
-
-    auto buffer = std::make_shared<RPCLIB_MSGPACK::sbuffer>();
-    RPCLIB_MSGPACK::pack(*buffer, user_call_obj);
-
-    // TODO: Change to move semantics when asio starts supporting move-only
-    // handlers in post(). [sztomi, 2016-02-14]
-    auto p = std::make_shared<std::promise<RPCLIB_MSGPACK::object_handle>>();
-    auto ft = p->get_future();
-
-    post(buffer, idx, func_name, p);
-
-    return ft;
-}
 
 
 //! \brief Sends a notification with the given name and arguments (if any).
@@ -107,22 +67,4 @@ void client::send(std::string const &func_name, Args... args) {
 
     post(buffer);
 }
-
-
-template <typename... Args>
-void client::send_user(std::string const &func_name,const uint64_t& charid, Args... args) {
-    RPCLIB_CREATE_LOG_CHANNEL(client)
-    RPCLOG_DEBUG("Sending notification {}", func_name);
-
-    auto args_obj = std::make_tuple(args...);
-    auto call_obj = std::make_tuple(
-        static_cast<uint8_t>(client::request_type::user_notification), func_name, charid,
-        args_obj);
-
-    auto buffer = new RPCLIB_MSGPACK::sbuffer;
-    RPCLIB_MSGPACK::pack(*buffer, call_obj);
-
-    post(buffer);
-}
-
 }//rpc
