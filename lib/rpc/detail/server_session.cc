@@ -30,7 +30,7 @@ server_session::server_session(server *srv, RPCLIB_ASIO::io_service *io,
 void server_session::start() { do_read(); }
 
 void server_session::close() {
-    LOG_INFO("Closing session.");
+    RPCLOG_INFO("Closing session.");
     exit_ = true;
     write_strand_.post([this]() {
         socket_.close();
@@ -79,10 +79,10 @@ void server_session::do_read() {
                         // and only third, if there is a special response, we
                         // use it
                         if (!this_handler().error_.get().is_nil()) {
-                            LOG_WARN("There was an error set in the handler");
+                            RPCLOG_WARN("There was an error set in the handler");
                             resp.capture_error(this_handler().error_);
                         } else if (!this_handler().resp_.get().is_nil()) {
-                            LOG_WARN("There was a special result set in the "
+                            RPCLOG_WARN("There was a special result set in the "
                                      "handler");
                             resp.capture_result(this_handler().resp_);
                         }
@@ -99,14 +99,14 @@ void server_session::do_read() {
                         }
 
                         if (this_session().exit_) {
-                            LOG_WARN("Session exit requested from a handler.");
+                            RPCLOG_WARN("Session exit requested from a handler.");
                             // posting through the strand so this comes after
                             // the previous write
                             write_strand_.post([this]() { exit_ = true; });
                         }
 
                         if (this_server().stopping_) {
-                            LOG_WARN("Server exit requested from a handler.");
+                            RPCLOG_WARN("Server exit requested from a handler.");
                             // posting through the strand so this comes after
                             // the previous write
                             write_strand_.post(
@@ -122,17 +122,17 @@ void server_session::do_read() {
                     // to resize its buffer doubling its size
                     // (https://github.com/msgpack/msgpack-c/issues/567#issuecomment-280810018)
                     if (pac_.buffer_capacity() < max_read_bytes) {
-                        LOG_TRACE("Reserving extra buffer: {}", max_read_bytes);
+                        RPCLOG_TRACE("Reserving extra buffer: {}", max_read_bytes);
                         pac_.reserve_buffer(max_read_bytes);
                     }
                     do_read();
                 }
             } else if (ec == RPCLIB_ASIO::error::eof ||
                        ec == RPCLIB_ASIO::error::connection_reset) {
-                LOG_INFO("Client disconnected");
+                RPCLOG_INFO("Client disconnected");
                 self->close();
             } else {
-                LOG_ERROR("Unhandled error code: {} | '{}'", ec, ec.message());
+                RPCLOG_ERROR("Unhandled error code: {} | '{}'", ec, ec.message());
             }
         }));
     if (exit_) {

@@ -37,7 +37,7 @@ client::async_call(std::string const &func_name, Args... args) {
     RPCLIB_CREATE_LOG_CHANNEL(client)
     wait_conn();
     using RPCLIB_MSGPACK::object;
-    LOG_DEBUG("Calling {}", func_name);
+    RPCLOG_DEBUG("Calling {}", func_name);
 
     auto args_obj = std::make_tuple(args...);
     const int idx = get_next_call_idx();
@@ -64,7 +64,7 @@ client::async_user_call(std::string const &func_name, const uint64_t& charid, Ar
     RPCLIB_CREATE_LOG_CHANNEL(client)
     wait_conn();
     using RPCLIB_MSGPACK::object;
-    LOG_DEBUG("Calling {}", func_name);
+    RPCLOG_DEBUG("Calling {}", func_name);
 
     auto args_obj = std::make_tuple(args...);
     const int idx = get_next_call_idx();
@@ -95,7 +95,7 @@ client::async_user_call(std::string const &func_name, const uint64_t& charid, Ar
 template <typename... Args>
 void client::send(std::string const &func_name, Args... args) {
     RPCLIB_CREATE_LOG_CHANNEL(client)
-    LOG_DEBUG("Sending notification {}", func_name);
+    RPCLOG_DEBUG("Sending notification {}", func_name);
 
     auto args_obj = std::make_tuple(args...);
     auto call_obj = std::make_tuple(
@@ -112,7 +112,7 @@ void client::send(std::string const &func_name, Args... args) {
 template <typename... Args>
 void client::send_user(std::string const &func_name,const uint64_t& charid, Args... args) {
     RPCLIB_CREATE_LOG_CHANNEL(client)
-    LOG_DEBUG("Sending notification {}", func_name);
+    RPCLOG_DEBUG("Sending notification {}", func_name);
 
     auto args_obj = std::make_tuple(args...);
     auto call_obj = std::make_tuple(

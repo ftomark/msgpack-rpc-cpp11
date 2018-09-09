@@ -68,14 +68,14 @@ struct server::impl {
     void start_accept() {
         acceptor_.async_accept(socket_, [this](std::error_code ec) {
             if (!ec) {
-                LOG_INFO("Accepted connection.");
+                RPCLOG_INFO("Accepted connection.");
                 auto s = std::make_shared<server_session>(
                     parent_, &io_, std::move(socket_),
                     suppress_exceptions_);
                 s->start();
                 sessions_.push_back(s);
             } else {
-                LOG_ERROR("Error while accepting connection: {}", ec);
+                RPCLOG_ERROR("Error while accepting connection: {}", ec);
             }
             start_accept();
             // TODO: allow graceful exit [sztomi 2016-01-13]
@@ -108,7 +108,7 @@ RPCLIB_CREATE_LOG_CHANNEL(server)
 
 server::server(uint16_t port)
     : pimpl(new server::impl(this, port)), disp_(std::make_shared<default_dispatcher>()) {
-    LOG_INFO("Created server on localhost:{}", port);
+    RPCLOG_INFO("Created server on localhost:{}", port);
     pimpl->start_accept();
 }
 
@@ -119,7 +119,7 @@ server::server(server&& other) noexcept {
 server::server(std::string const &address, uint16_t port)
     : pimpl(new server::impl(this, address, port)),
     disp_(std::make_shared<default_dispatcher>()) {
-    LOG_INFO("Created server on address {}:{}", address, port);
+    RPCLOG_INFO("Created server on address {}:{}", address, port);
     pimpl->start_accept();
 }
 
@@ -127,27 +127,27 @@ server::server()
 	: pimpl(new server::impl(this)),
     disp_(std::make_shared<default_dispatcher>()) 
 {
-    LOG_INFO("Created server without accept.");
+    RPCLOG_INFO("Created server without accept.");
 }
 
 server::server(default_dispatcher* disp)
 	: pimpl(new server::impl(this)),
     disp_(disp) 
 {
-    LOG_INFO("Created server without accept.");
+    RPCLOG_INFO("Created server without accept.");
 }
 
 void server::accept(std::string const &address, uint16_t port)
 {
     pimpl->accept(address, port);
-    LOG_INFO("Created server on address {}:{}", address, port);
+    RPCLOG_INFO("Created server on address {}:{}", address, port);
     pimpl->start_accept();
 }
 
 void server::accept(uint16_t port)
 {
     pimpl->accept(port);
-    LOG_INFO("Created server on localhost:{}", port);
+    RPCLOG_INFO("Created server on localhost:{}", port);
     pimpl->start_accept();
 }
 
@@ -177,9 +177,9 @@ void server::poll_one() { pimpl->io_.poll_one(); }
 void server::async_run(std::size_t worker_threads) {
     pimpl->loop_workers_.create_threads(worker_threads, [this]() {
         name_thread("server");
-        LOG_INFO("Starting");
+        RPCLOG_INFO("Starting");
         pimpl->io_.run();
-        LOG_INFO("Exiting");
+        RPCLOG_INFO("Exiting");
     });
 }
 

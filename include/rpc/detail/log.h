@@ -125,33 +125,33 @@ private:
 
 RPCLIB_CREATE_LOG_CHANNEL(global)
 
-#define LOG_INFO(...)                                                          \
+#define RPCLOG_INFO(...)                                                          \
     rpc::detail::logger::instance().info(rpc_channel_name, __VA_ARGS__)
 
-#define LOG_WARN(...)                                                          \
+#define RPCLOG_WARN(...)                                                          \
     rpc::detail::logger::instance().warn(rpc_channel_name, __VA_ARGS__)
 
-#define LOG_ERROR(...)                                                         \
+#define RPCLOG_ERROR(...)                                                         \
     rpc::detail::logger::instance().error(rpc_channel_name, __VA_ARGS__)
 
-#define LOG_DEBUG(...)                                                         \
+#define RPCLOG_DEBUG(...)                                                         \
     rpc::detail::logger::instance().debug(rpc_channel_name, __FILE__,    \
                                              __func__, __LINE__, __VA_ARGS__)
 
-#define LOG_TRACE(...)                                                         \
+#define RPCLOG_TRACE(...)                                                         \
     rpc::detail::logger::instance().trace(rpc_channel_name, __FILE__,    \
                                              __func__, __LINE__, __VA_ARGS__)
 
-#define LOG_EXPR(Level, Expr) LOG_##Level("`" #Expr "` = {}", Expr)
+#define RPCLOG_EXPR(Level, Expr) LOG_##Level("`" #Expr "` = {}", Expr)
 
 #else
 
-#define LOG_INFO(...)
-#define LOG_WARN(...)
-#define LOG_ERROR(...)
-#define LOG_DEBUG(...)
-#define LOG_TRACE(...)
-#define LOG_EXPR(...)
+#define RPCLOG_INFO(...)
+#define RPCLOG_WARN(...)
+#define RPCLOG_ERROR(...)
+#define RPCLOG_DEBUG(...)
+#define RPCLOG_TRACE(...)
+#define RPCLOG_EXPR(...)
 #define RPCLIB_CREATE_LOG_CHANNEL(...)
 
 #endif

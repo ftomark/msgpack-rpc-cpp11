@@ -56,7 +56,7 @@ struct client::impl {
 	}
 
     void do_connect(tcp::resolver::iterator endpoint_iterator) {
-        LOG_INFO("Initiating connection.");
+        RPCLOG_INFO("Initiating connection.");
         state_ = client::connection_state::initial;
         
         RPCLIB_ASIO::async_connect(
@@ -64,7 +64,7 @@ struct client::impl {
             [this](std::error_code ec, tcp::resolver::iterator) {
                 if (!ec) {
                     std::unique_lock<std::mutex> lock(mut_connection_finished_);
-                    LOG_INFO("Client connected to {}:{}", addr_, port_);
+                    RPCLOG_INFO("Client connected to {}:{}", addr_, port_);
                     is_connected_ = true;
                     state_ = client::connection_state::connected;
                     conn_finished_.notify_all();
@@ -72,13 +72,13 @@ struct client::impl {
                 } else {
                     state_ = client::connection_state::disconnected;
                     is_connected_ = false;
-                    LOG_ERROR("Error during connection: {}", ec);
+                    RPCLOG_ERROR("Error during connection: {}", ec);
                 }
             });
     }
 
     void do_read() {
-        LOG_TRACE("do_read");
+        RPCLOG_TRACE("do_read");
         constexpr std::size_t max_read_bytes = default_buffer_size;
         writer_->socket_.async_read_some(
             RPCLIB_ASIO::buffer(pac_.buffer(), max_read_bytes),
@@ -86,7 +86,7 @@ struct client::impl {
             // (since it's constexpr), but MSVC insists.
             [this, max_read_bytes](std::error_code ec, std::size_t length) {
                 if (!ec) {
-                    LOG_TRACE("Read chunk of size {}", length);
+                    RPCLOG_TRACE("Read chunk of size {}", length);
                     pac_.buffer_consumed(length);
 
                     RPCLIB_MSGPACK::unpacked result;
@@ -116,14 +116,14 @@ struct client::impl {
                     // to resize its buffer doubling its size
                     // (https://github.com/msgpack/msgpack-c/issues/567#issuecomment-280810018)
                     if (pac_.buffer_capacity() < max_read_bytes) {
-                        LOG_TRACE("Reserving extra buffer: {}", max_read_bytes);
+                        RPCLOG_TRACE("Reserving extra buffer: {}", max_read_bytes);
                         pac_.reserve_buffer(max_read_bytes);
                     }
                     do_read();
                 } else if (ec == RPCLIB_ASIO::error::eof) {
                     state_ = client::connection_state::disconnected;
                     is_connected_ = false;
-                    LOG_WARN("The server closed the connection.");
+                    RPCLOG_WARN("The server closed the connection.");
                 } else if (ec == RPCLIB_ASIO::error::connection_reset) {
                     // Yes, this should be connection_state::reset,
                     // but on windows, disconnection results in reset. May be
@@ -131,9 +131,9 @@ struct client::impl {
                     // investigated later.
                     state_ = client::connection_state::disconnected;
                     is_connected_ = false;
-                    LOG_WARN("The connection was reset.");
+                    RPCLOG_WARN("The connection was reset.");
                 } else {
-                    LOG_ERROR("Unhandled error code: {} | '{}'", ec,
+                    RPCLOG_ERROR("Unhandled error code: {} | '{}'", ec,
                               ec.message());
                 }
                
@@ -203,7 +203,7 @@ client::client(std::string const &addr, uint16_t port)
         {
             if (pimpl->get_connection_state()==rpc::client::connection_state::disconnected)
             {//开始重连
-                LOG_WARN("The client start reconnect...");
+                RPCLOG_WARN("The client start reconnect...");
                 this->reconnect();
             }
             
@@ -222,7 +222,7 @@ client::client()
     
 
 
-void client::connect(std::string const& addr,uint16_t port)
+void client::connect(std::string const& addr,uint16_t port,bool auto_reconnect)
 {
 	pimpl->addr_ = addr;
 	pimpl->port_ = port;
@@ -237,11 +237,13 @@ void client::connect(std::string const& addr,uint16_t port)
         RPCLIB_CREATE_LOG_CHANNEL(client)
         name_thread("client");
         pimpl->io_.run();
-        LOG_WARN("The connection was disconnect.");
+        RPCLOG_WARN("The connection was disconnect.");
     });
     
     pimpl->io_thread_ = std::move(io_thread);
     
+    if (auto_reconnect)
+    {
     std::thread check_thread([this]() {
         RPCLIB_CREATE_LOG_CHANNEL(client)
         name_thread("check_connect");
@@ -249,7 +251,7 @@ void client::connect(std::string const& addr,uint16_t port)
         {
             if (pimpl->get_connection_state()==rpc::client::connection_state::disconnected)
             {//开始重连
-                LOG_WARN("The client start reconnect...");
+                RPCLOG_WARN("The client start reconnect...");
                 this->reconnect();
             }
             
@@ -258,13 +260,14 @@ void client::connect(std::string const& addr,uint16_t port)
     });
     
     pimpl->check_thread_ = std::move(check_thread);
+    }
 }
 
 void client::reconnect()
 {
     if (get_connection_state()==client::connection_state::disconnected)
     {        
-        LOG_TRACE("start reconnect...");
+        RPCLOG_TRACE("start reconnect...");
         pimpl->io_.reset();
         pimpl->io_thread_.join();
         
@@ -277,7 +280,7 @@ void client::reconnect()
             RPCLIB_CREATE_LOG_CHANNEL(client)
             name_thread("client");
             pimpl->io_.run();
-            LOG_WARN("The connection was disconnect.");
+            RPCLOG_WARN("The connection was disconnect.");
         });
         
         pimpl->io_thread_ = std::move(io_thread);

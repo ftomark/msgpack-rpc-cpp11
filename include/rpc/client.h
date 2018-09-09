@@ -47,7 +47,7 @@ public:
     //! This means that any outstanding reads and writes are completed first.
     ~client();
 
-	void connect(std::string const& addr,uint16_t port);
+	void connect(std::string const& addr,uint16_t port, bool auto_reconnect=false);
     
     
     
@@ -146,6 +146,9 @@ public:
 
     //! \brief Waits for the completion of all ongoing calls.
     void wait_all_responses();
+    
+    //! \brief 清理之前的连接，建立新的连接
+    void reconnect();
 
 private:
     //! \brief Type of a promise holding a future response.
@@ -153,7 +156,7 @@ private:
 
     enum class request_type { call = 2, notification = 0  ,user_call = 3, user_notification=4};
 
-    void reconnect();
+    
     void wait_conn();
     void post(std::shared_ptr<RPCLIB_MSGPACK::sbuffer> buffer, int idx,
               std::string const& func_name,
