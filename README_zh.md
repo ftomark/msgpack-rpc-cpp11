@@ -15,7 +15,15 @@
 * GCC > 4.8
 * cmake > 3.10
 
+编译及安装
+mkdir build
+cd build
+cmake .. 
+
 # 举个栗子
+cd ..
+vi rpcserver.cpp
+
 
 ## Server
 
@@ -48,6 +56,8 @@ int main(int argc, char *argv[]) {
 ```
 run为阻塞函数，如果想调用非阻塞函数，可以使用run.pull,run.pull_one.
 
+c++ rpcserver.cpp -orpcserver -std=gnu++11 -I./include -I./include/rpc/msgpack -DRPCLIB_MSGPACK=msgpack -lrpc -L./build/Debug/ 
+
 ## Client
 
 ```cpp
@@ -65,3 +75,4 @@ int main() {
 }
 ```
 
+c++ rpcclient.cpp -orpcclient -std=gnu++11 -I./include -I./include/rpc/msgpack -DRPCLIB_MSGPACK=msgpack -lrpc -L./build/Debug/ 
