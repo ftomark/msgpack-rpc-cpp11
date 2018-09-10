@@ -64,7 +64,7 @@ public:
     //!
     //! \throws rpc::rpc_error if the server responds with an error.
     template <typename... Args>
-    const RPCLIB_MSGPACK::object& call(std::string const &func_name, Args... args);
+    RPCLIB_MSGPACK::object call(std::string const &func_name, Args... args);
     
 
     //! \brief Calls a function asynchronously with the given name and
