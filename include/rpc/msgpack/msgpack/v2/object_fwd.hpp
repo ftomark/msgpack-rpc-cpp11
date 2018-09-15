@@ -58,6 +58,12 @@ public:
      */
     template <typename T>
     T& convert(T& v) const { return v1::object::convert(v); }
+    
+    template <typename T>
+    operator  T()
+    {
+        return (T)this->convert();
+    }
 
     using v1::object::with_zone;
     implicit_type convert() const;

@@ -34,6 +34,7 @@ struct client::impl {
           addr_(addr),
           port_(port),
           is_connected_(false),
+          stop_check_thread_(false),
           state_(client::connection_state::initial),
           writer_(std::make_shared<detail::async_writer>(
               &io_, RPCLIB_ASIO::ip::tcp::socket(io_))),
@@ -172,6 +173,7 @@ struct client::impl {
     uint16_t port_;
     RPCLIB_MSGPACK::unpacker pac_;
     std::atomic_bool is_connected_;
+    std::atomic_bool stop_check_thread_;
     std::condition_variable conn_finished_;
     std::mutex mut_connection_finished_;
     std::thread io_thread_;
@@ -201,6 +203,7 @@ client::client(std::string const &addr, uint16_t port)
         name_thread("check_connect");
         while(true)
         {
+            if (this->pimpl->stop_check_thread_) break;
             if (pimpl->get_connection_state()==rpc::client::connection_state::disconnected)
             {//开始重连
                 RPCLOG_WARN("The client start reconnect...");
@@ -249,6 +252,8 @@ void client::connect(std::string const& addr,uint16_t port,bool auto_reconnect)
         name_thread("check_connect");
         while(true)
         {
+            if (this->pimpl->stop_check_thread_) break;
+            
             if (pimpl->get_connection_state()==rpc::client::connection_state::disconnected)
             {//开始重连
                 RPCLOG_WARN("The client start reconnect...");
@@ -361,8 +366,10 @@ RPCLIB_NORETURN void client::throw_timeout(std::string const& func_name) {
 }
 
 client::~client() {
+    pimpl->stop_check_thread_=true;
     pimpl->io_.stop();
     pimpl->io_thread_.join();
+    pimpl->check_thread_.join();
 }
 
 }
