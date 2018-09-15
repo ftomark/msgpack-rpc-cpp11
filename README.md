@@ -11,6 +11,7 @@
   * No code generation step to integrate in your build, just C++
   * Support auto-reconnect
   * Support msgpack-c 3.1(include cpp17)
+  * Support customize dispatcher.
 
 # Look&feel
 
