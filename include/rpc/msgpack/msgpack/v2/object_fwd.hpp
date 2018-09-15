@@ -60,9 +60,16 @@ public:
     T& convert(T& v) const { return v1::object::convert(v); }
     
     template <typename T>
-    operator  T()
+    operator  T() noexcept
     {
-        return (T)this->convert();
+        try{
+            return this->convert();
+        }
+        catch(msgpack::type_error& e)
+        {
+            T def_value;
+            return def_value;
+        }
     }
 
     using v1::object::with_zone;
