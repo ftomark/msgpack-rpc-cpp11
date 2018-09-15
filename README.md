@@ -9,6 +9,8 @@
   * Call functions through RPC (of programs written in any language)
   * No IDL to learn
   * No code generation step to integrate in your build, just C++
+  * Support auto-reconnect
+  * Support msgpack-c 3.1(include cpp17)
 
 # Look&feel
 
