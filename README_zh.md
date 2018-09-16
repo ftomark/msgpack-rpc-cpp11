@@ -76,3 +76,7 @@ int main() {
 ```
 
 c++ rpcclient.cpp -orpcclient -std=gnu++11 -I./include -I./include/rpc/msgpack -DRPCLIB_MSGPACK=msgpack -lrpc -L./build/Debug/ 
+
+谁在使用EasyRPC
+
+[巨人网络](https://www.ztgame.com/)
