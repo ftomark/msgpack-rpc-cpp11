@@ -76,7 +76,7 @@ All planned 1.0.0 features are done and tested; the current state is production-
 This list is updated as I learn about more people using the library; let me
 know if you don't want your project listed here.
 
-  * [Microsoft AirSim](https://github.com/Microsoft/AirSim)
+  * [Giant Interactive Group Inc.](https://www.ztgame.com/)
 
 # Thanks
 
@@ -87,14 +87,6 @@ know if you don't want your project listed here.
   * [cppformat](https://github.com/fmtlib/fmt) (now renamed `fmtlib`, by Victor Zverovich ([website](http://fmtlib.net))
   * [googletest](https://github.com/google/googletest) by Google
   * [wheels](https://github.com/rmartinho/wheels) by Martinho Fernandes
-
-Shoutouts to
-
-  * [Appveyor](https://www.appveyor.com/)
-  * [Travis CI](https://travis-ci.org)
-  * [Coveralls.io](https://coveralls.io/)
-  * [Coverity](http://www.coverity.com)
-  * [ASan & TSan](https://github.com/google/sanitizers) helped spotting and resolving many bugs.
 
 
 
