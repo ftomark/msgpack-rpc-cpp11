@@ -368,8 +368,9 @@ RPCLIB_NORETURN void client::throw_timeout(std::string const& func_name) {
 client::~client() {
     pimpl->stop_check_thread_=true;
     pimpl->io_.stop();
-    pimpl->io_thread_.join();
-    pimpl->check_thread_.join();
+    if (pimpl->check_thread_.joinable()) pimpl->check_thread_.join();
+    if (pimpl->io_thread_.joinable()) pimpl->io_thread_.join();
+
 }
 
 }
