@@ -1132,7 +1132,19 @@ inline typename std::enable_if<msgpack::has_as<T>::value, T>::type object::as() 
 template <typename T>
 inline typename std::enable_if<!msgpack::has_as<T>::value, T>::type object::as() const {
     T v;
-    convert(v);
+
+    try
+    {
+        convert(v);
+    }
+    catch(msgpack::type_error& e)
+    {
+        return v;
+    }
+    catch(...)
+    {
+        return v;
+    }
     return v;
 }
 
