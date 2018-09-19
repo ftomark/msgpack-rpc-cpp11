@@ -15,10 +15,17 @@
 * GCC > 4.8
 * cmake > 3.10
 
-编译及安装
+编译及安装:
+
+cd EasyRPC
+
 mkdir build
+
 cd build
-cmake .. 
+
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
+
+make install
 
 # 举个栗子
 cd ..
