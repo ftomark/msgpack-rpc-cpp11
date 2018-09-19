@@ -17,16 +17,10 @@ void default_dispatcher::dispatch(RPCLIB_MSGPACK::sbuffer const &msg) {
 
 response default_dispatcher::dispatch(RPCLIB_MSGPACK::object const &msg,
                               bool suppress_exceptions) {
-    call_t the_call;
-    msg.convert(the_call);
-	auto &&type = std::get<0>(the_call);
-
-
-	//应该根据msg第一个字段来判断转发,第一个字段代表调用类型
-    switch (type) {
-    case 0:
+    switch (msg.via.array.size) {
+    case 3:
         return dispatch_notification(msg, suppress_exceptions);
-    case 1:
+    case 4:
         return dispatch_call(msg, suppress_exceptions);
     default:
         return response::empty();
