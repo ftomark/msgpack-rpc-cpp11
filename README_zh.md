@@ -17,8 +17,12 @@
 
 编译及安装
 mkdir build
+
 cd build
-cmake .. 
+
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
+
+make install
 
 # 举个栗子
 cd ..
