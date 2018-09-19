@@ -141,7 +141,7 @@ private:
     //! \brief Type of a promise holding a future response.
     using rsp_promise = std::promise<RPCLIB_MSGPACK::object_handle>;
 
-    enum class request_type {  notification = 2 ,call = 1};
+    enum class request_type {  notification = 2 ,call = 0};
 
     
     void wait_conn();

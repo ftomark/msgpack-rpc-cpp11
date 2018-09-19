@@ -116,7 +116,7 @@ public:
     virtual detail::response dispatch(RPCLIB_MSGPACK::object const &msg,
                               bool suppress_exceptions = false);
 
-    enum class request_type { notification=2, call=1 };
+    enum class request_type { notification=2, call=0 };
     
     //template <typename T> RPCLIB_MSGPACK::object pack(T &&arg);
 
