@@ -178,7 +178,11 @@ func (this *Client) response(reader io.Reader) (uint32, reflect.Value, error) {
 		msgId, err = this.toInteger(_data[1])
 		errMsg := reflect.ValueOf(_data[2])
 		if errMsg.IsValid() {
-			err = errors.New(fmt.Sprint(errMsg))
+			if errMsg.Type().Kind() == reflect.String {
+				err = errors.New(errMsg.String())
+			} else {
+				err = errors.New(fmt.Sprint(errMsg))
+			}
 			break
 		}
 		return uint32(msgId), reflect.ValueOf(_data[3]), nil
