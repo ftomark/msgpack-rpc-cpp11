@@ -11,6 +11,7 @@ func Test_Send(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+	defer client.Close()
 	//client.SetAutoReconnect(true)
 
 	s := time.Now()
