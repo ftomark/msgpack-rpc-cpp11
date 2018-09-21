@@ -101,7 +101,7 @@ func (this *Client) checkConnect() (err error) {
 	return
 }
 
-func (this *Client) handleError(err error) {
+func (this *Client) readWriteError(err error) {
 	if !this.autoReconnect {
 		return
 	}
@@ -139,12 +139,11 @@ func (this *Client) request(writer io.Writer, msgId uint32, funcName string, arg
 	enc := msgpack.NewEncoder(&buf)
 	err = enc.EncodeMulti(uint8(REQUEST), msgId, funcName, arguments)
 	if err != nil {
-		this.handleError(err)
 		return
 	}
 	_, err = writer.Write(buf.Bytes())
 	if err != nil {
-		this.handleError(err)
+		this.readWriteError(err)
 	}
 	return
 }
@@ -157,7 +156,7 @@ func (this *Client) response(reader io.Reader) (uint32, reflect.Value, error) {
 	dec := msgpack.NewDecoder(reader)
 	data, err = dec.DecodeInterface()
 	if err != nil {
-		this.handleError(err)
+		this.readWriteError(err)
 		return 0, reflect.Value{}, err
 	}
 	for {
@@ -204,12 +203,11 @@ func (this *Client) Send(funcName string, arguments ...interface{}) (err error) 
 	enc := msgpack.NewEncoder(&buf)
 	err = enc.EncodeMulti(uint8(NOTIFICATION), funcName, arguments)
 	if err != nil {
-		this.handleError(err)
 		return
 	}
 	_, err = this.conn.Write(buf.Bytes())
 	if err != nil {
-		this.handleError(err)
+		this.readWriteError(err)
 	}
 	return
 }
