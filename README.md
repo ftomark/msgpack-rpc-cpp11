@@ -67,6 +67,9 @@ int main() {
 }
 ```
 
+## Other Clients
+Golang - https://github.com/tryor/tryrpc
+
 # Status
 
 All planned 1.0.0 features are done and tested; the current state is production-ready.

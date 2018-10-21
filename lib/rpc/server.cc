@@ -52,7 +52,7 @@ struct server::impl {
 		//boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve({address, port});
 		tcp::endpoint endpoint(ip::address::from_string(address), port);
 		acceptor_.open(endpoint.protocol());
-		//acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+		acceptor_.set_option(ip::tcp::acceptor::reuse_address(true));
 		acceptor_.bind(endpoint);
 		acceptor_.listen();
 	}
@@ -61,6 +61,7 @@ struct server::impl {
 	{
 		tcp::endpoint endpoint(tcp::v4(), port);
 		acceptor_.open(endpoint.protocol());
+        acceptor_.set_option(ip::tcp::acceptor::reuse_address(true));
 		acceptor_.bind(endpoint);
 		acceptor_.listen();
 	}

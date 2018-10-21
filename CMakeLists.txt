@@ -24,6 +24,9 @@ option(RPCLIB_GENERATE_COMPDB
 option(RPCLIB_BUILD_EXAMPLES 
   "Build examples." 
   OFF)
+option(RPCLIB_BUILD_CAPTAIN 
+  "Build captain." 
+  OFF)
 option(RPCLIB_ENABLE_LOGGING 
   "ALlow logging in the library for debug purposes."
   OFF)
@@ -211,6 +214,17 @@ if(RPCLIB_BUILD_EXAMPLES)
   add_subdirectory(examples/mandelbrot)
   add_subdirectory(examples/calculator)
   #add_subdirectory(examples/mydispatcher)
+endif()
+
+#
+# Example programs
+#
+if(RPCLIB_BUILD_CAPTAIN)
+  set(RPCLIB_ROOT_DIR "${PROJECT_SOURCE_DIR}")
+  set(RPCLIB_PROJECT_NAME "${CMAKE_PROJECT_NAME}")
+  set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/localbuild")
+  set(ENV{RPCLIB_DEFAULT_PORT} "${RPCLIB_DEFAULT_PORT}")
+  add_subdirectory(captain)
 endif()
 
 #
